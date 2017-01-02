@@ -1,0 +1,65 @@
+CoreASM Splice
+
+use Standard
+
+universe Agents = { C, AS, S }
+
+init Start
+
+// Client's program
+rule Client = {
+	par
+		RequireAuthorization
+		GetAuthorization
+		RequireAuthenticator
+		GetAuthenticator
+		ShowAuthenticator
+		MutualAuthentication
+	endpar
+}
+rule RequireAuthorization = skip
+rule GetAuthorization = skip
+rule RequireAuthenticator = skip
+rule GetAuthenticator = skip
+rule ShowAuthenticator = skip
+rule MutualAuthentication = skip
+
+// Server's program
+rule Server = {
+	par
+		CheckAuthenticator
+		RequireClientKey
+		GetClientKey
+		ProvideHandshake
+	endpar
+}
+rule CheckAuthenticator = skip
+rule RequireClientKey = skip
+rule GetClientKey = skip
+rule ProvideHandshake = skip
+
+// AS's program
+rule AuthenticationServer = {
+	par
+		CheckClientIdentity
+		ProvideAuthorization
+		CheckServerIdentity
+		ProvideAuthenticator
+		ProvideClientKey
+	endpar
+}
+rule CheckClientIdentity = skip
+rule ProvideAuthorization = skip
+rule CheckServerIdentity = skip
+rule ProvideAuthenticator = skip
+rule ProvideClientKey = skip
+
+rule Start = {
+	Agents(C) := true	
+	Agents(S) := true
+	Agents(AS) := true
+	
+	program(C):=@Client
+	program(S):=@Server
+	program(AS):=@AuthenticationServer
+}
