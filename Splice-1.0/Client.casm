@@ -1,0 +1,28 @@
+CoreModule Client
+
+use Standard
+
+include "lib.casm"
+
+// Client's program
+rule Client = {
+	par
+		RequireAuthorization
+		GetAuthorization
+		RequireAuthenticator
+		GetAuthenticator
+		ShowAuthenticator
+		MutualAuthentication
+	endpar
+}
+rule RequireAuthorization = {
+	if mode(self) = ReadyToSend and not authorized(self) then 
+		sendto(AS,STRING) 
+		mode(self) := ReadyToReceive 
+}
+		
+rule GetAuthorization = skip
+rule RequireAuthenticator = skip
+rule GetAuthenticator = skip
+rule ShowAuthenticator = skip
+rule MutualAuthentication = skip

@@ -1,65 +1,32 @@
+/* 
+ * Splice Protocol in CoreASM
+ * @version 1.0
+ * 
+ * (c) 2017 Gianluca Gennaro Bevilacqua, University of Bari (Italy)
+ */
+
 CoreASM Splice
-
 use Standard
+use Modularity
 
-universe Agents = { C, AS, S }
+include "Client.casm"
+include "Server.casm"
+include "AuthenticationServer.casm"
+include "lib.casm"
 
 init Start
 
-// Client's program
-rule Client = {
-	par
-		RequireAuthorization
-		GetAuthorization
-		RequireAuthenticator
-		GetAuthenticator
-		ShowAuthenticator
-		MutualAuthentication
-	endpar
-}
-rule RequireAuthorization = skip
-rule GetAuthorization = skip
-rule RequireAuthenticator = skip
-rule GetAuthenticator = skip
-rule ShowAuthenticator = skip
-rule MutualAuthentication = skip
-
-// Server's program
-rule Server = {
-	par
-		CheckAuthenticator
-		RequireClientKey
-		GetClientKey
-		ProvideHandshake
-	endpar
-}
-rule CheckAuthenticator = skip
-rule RequireClientKey = skip
-rule GetClientKey = skip
-rule ProvideHandshake = skip
-
-// AS's program
-rule AuthenticationServer = {
-	par
-		CheckClientIdentity
-		ProvideAuthorization
-		CheckServerIdentity
-		ProvideAuthenticator
-		ProvideClientKey
-	endpar
-}
-rule CheckClientIdentity = skip
-rule ProvideAuthorization = skip
-rule CheckServerIdentity = skip
-rule ProvideAuthenticator = skip
-rule ProvideClientKey = skip
-
 rule Start = {
-	Agents(C) := true	
-	Agents(S) := true
-	Agents(AS) := true
+	forall a in Agents do {
+		Agents(a) := true
+	}
+		
+	authorized(C) := false
+	mode(C) := ReadyToSend
+	mode(AS) := ReadyToReceive
 	
-	program(C):=@Client
-	program(S):=@Server
-	program(AS):=@AuthenticationServer
+	program(C) := @Client
+//	program(S) := @Server
+	program(AS) := @AuthenticationServer
+	program(self) := undef
 }

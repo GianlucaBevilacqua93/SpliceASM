@@ -1,0 +1,32 @@
+CoreModule lib
+
+use Standard
+
+universe Agents = { C, AS, S }
+universe Status = { ReadyToReceive, ReadyToSend, ReadyToStart }
+
+function mode: Status -> BOOLEAN
+function authorized: Agents -> BOOLEAN
+function authenticated: Agents -> BOOLEAN
+
+/*rule receivingfrom(agent) = 
+	 if agent = C then
+	 	result := true
+	 else
+	 	result := false*/
+
+rule sendto(Agents,STRING) =
+par 
+	par
+		if(Agents = C) then
+			print self + " INVIA A C" //to "ClientCh.txt"
+	endpar
+	par	
+		if(Agents = AS) then
+			print self + " INVIA A AS" // to "ASCh.txt"
+	endpar
+	par	
+		if(Agents = S) then	
+			print self + " INVIA A S" //to "ServerCh.txt"
+	endpar
+endpar	
