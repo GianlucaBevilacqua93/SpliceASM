@@ -1,0 +1,53 @@
+CoreModule lib
+
+use Standard
+
+universe Agents = { C, AS, S }
+universe Status = { ReadyToReceive, ReadyToSend, ReadyToStart }
+//universe Message = { msg }
+
+function mode: Agents -> Status
+function authenticated: Agents -> BOOLEAN
+function authorized: Agents -> BOOLEAN
+function receivedfrom: Agents * Agents -> STRING
+
+derived isMode(s) = return res in {
+	if mode(self) = s then
+		res := true 
+	else
+		res := false
+}
+derived isAuthorized = return res in {
+	if authorized(self) = true then
+		res := true
+	else
+		res := false
+}
+derived receiveFrom(a,m) = return res in {
+	if receivedfrom(self,a) = m and m != undef then
+		res := true
+	else
+		res := false
+}	
+rule clear(a,m) = {
+	if receiveFrom(a,m) then
+		receivedfrom(self,a) := undef
+}
+
+rule sendto(Agents,msg) =
+par 
+	par
+		if(self = AS and Agents = C) then
+			print self + " INVIA A C: " + msg into "log.txt"
+			receivedfrom(C,self) := msg
+	endpar
+	par	
+		if(self = C and Agents = AS) then
+			print self + " INVIA A AS: " + msg into "log.txt"		
+			receivedfrom(AS,self) := msg
+	endpar
+	par	
+		if(Agents = S) then	
+			print self + " INVIA A S: " + msg into "log.txt"
+	endpar
+endpar	

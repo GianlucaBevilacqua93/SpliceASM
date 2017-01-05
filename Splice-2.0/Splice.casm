@@ -1,0 +1,33 @@
+/* 
+ * Splice Protocol in CoreASM
+ * @version 2.0
+ * 
+ * (c) 2017 Gianluca Gennaro Bevilacqua, University of Bari (Italy)
+ */
+
+CoreASM Splice
+use Standard
+use Modularity
+use Time
+
+include "Client.casm"
+include "Server.casm"
+include "AuthenticationServer.casm"
+include "lib.casm"
+
+init Start
+
+rule Start = {
+	forall a in Agents do {
+		Agents(a) := true
+		authenticated(a) := false
+		authorized(a) := false
+	}
+	mode(C) := ReadyToSend
+	mode(AS) := ReadyToReceive
+	
+	program(C) := @Client
+//	program(S) := @Server
+	program(AS) := @AuthenticationServer
+	program(self) := undef // comment it if you want to enable loop over Start rule
+}

@@ -1,0 +1,36 @@
+CoreModule Client
+
+use Standard
+
+include "lib.casm"
+
+// Client's program
+rule Client = {
+	par
+		seq
+			RequireAuthorization
+			GetAuthorization
+		endseq
+		RequireAuthenticator
+		GetAuthenticator
+		ShowAuthenticator
+		MutualAuthentication
+	endpar
+}
+rule RequireAuthorization = {
+	if isMode(ReadyToSend) and not isAuthorized then 
+		sendto(AS,"msg") 
+		mode(self) := ReadyToReceive
+}
+		
+rule GetAuthorization = {
+	if isMode(ReadyToReceive) /*and not isAuthorized*/ and receiveFrom(AS,"message") then		
+		print "C RICEVE DA AS message" into "log.txt"
+		clear(AS,"message")
+		authorized(self) := true
+		mode(self) := ReadyToSend
+}
+rule RequireAuthenticator = skip
+rule GetAuthenticator = skip
+rule ShowAuthenticator = skip
+rule MutualAuthentication = skip

@@ -1,0 +1,34 @@
+CoreModule AuthenticationServer
+
+use Standard
+
+include "lib.casm"
+
+// AS's program
+rule AuthenticationServer = {
+	par
+		seq
+			CheckClientIdentity
+			ProvideAuthorization
+		endseq
+		CheckServerIdentity
+		ProvideAuthenticator
+		ProvideClientKey
+	endpar
+}
+rule CheckClientIdentity = {
+	if isMode(ReadyToReceive) and receiveFrom(C,"msg") then 
+		print "AS RICEVE DA C msg" into "log.txt"
+		mode(self) := ReadyToSend 
+}
+
+rule ProvideAuthorization = {
+	if isMode(ReadyToSend) and receiveFrom(C,"msg") then
+		sendto(C,"message")
+		clear(C,"msg")
+		mode(self) := ReadyToReceive
+}
+
+rule CheckServerIdentity = skip
+rule ProvideAuthenticator = skip
+rule ProvideClientKey = skip
